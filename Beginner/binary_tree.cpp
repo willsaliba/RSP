@@ -2,7 +2,9 @@
 using namespace std;
 /*
 This file contains the implementation for a binary tree
--doesn't allow duplicate elements to be inserted
+-doesn't reinsert elements which are already in tree
+-when a node with two children is deleted it's replaced by the max of the left subtree
+-can print inorder
 */
 
 struct Node {
@@ -15,80 +17,128 @@ struct Node {
 class BinaryTree {
 
 private:
-  Node* root;
+  Node *root;
 
-  Node* recursive_search(Node* currNode, int val) {
-    if (currNode->value == val) return currNode;
-    else if (val < currNode->value && currNode->left != nullptr) return recursive_search(currNode->left, val);
-    else if (val > currNode->value && currNode->right != nullptr) return recursive_search(currNode->right, val);
-    else return nullptr;
+  // binary tree traversal
+  Node *recursive_search(Node *node, int val) {
+    // base case
+    if (val == node->value)
+      return node;
+
+    // recursing
+    else if (val > node->value && node->right != nullptr)
+      return recursive_search(node->right, val);
+    else if (val < node->value && node->left != nullptr)
+      return recursive_search(node->left, val);
+
+    return nullptr; // if reach end & not found
   }
 
-  void recursive_insert(Node* currNode, int val) {
-    //if element already in tree do nothing
-    if (currNode->value == val) return;
-    //if val < node & left subtree empty insert else recurse left
-    else if (val < currNode->value) {
-      if (currNode->left == nullptr) {
-        Node* new_node = new Node(val);
-        currNode->left = new_node;
-      } else {
-        recursive_insert(currNode->left, val);
-      }
-    }
-    //if val > node & right subtree empty insert else recurse right
-    else if (val > currNode->value) {
-      if (currNode->right == nullptr) {
-        Node* new_node = new Node(val);
-        currNode->right = new_node;
-      } else {
-        recursive_insert(currNode->right, val);
-      }
-    }
+  Node *recursive_insert(Node *node, int val) {
+    // base case
+    if (node == nullptr)
+      return new Node(val);
+
+    // recursing
+    else if (val < node->value)
+      node->left = recursive_insert(node->left, val);
+    else if (val > node->value)
+      node->right = recursive_insert(node->right, val);
+
+    return node; // no action taken if duplicate
   }
 
-  //maybe suss adsa
-  void recursive_remove(Node* currNode, int val) {
+  Node *recursive_remove(Node *node, int val) {
+    //base case
+    if (node == nullptr) return node;
 
+    //recursing
+    else if (val < node->value)
+      node->left = recursive_remove(node->left, val);
+    else if (val > node->value)
+      node->right = recursive_remove(node->right, val);
+    
+    /* node found */
+    else {
+      // 0 children
+      if (node->left == nullptr && node->right == nullptr) {
+        delete node;
+        return nullptr; // return nullptr to parent's child pointer
+      }
+      //2 children (replace with max from left subtree)
+      else if (node->left != nullptr && node->right != nullptr) {
+        Node *max_left = node->left;
+        while (max_left->right != nullptr)
+          max_left = max_left->right;
+        node->value = max_left->value;
+        node->left = recursive_remove(node->left, max_left->value);
+      }
+      //1 child
+      else {
+        Node *temp = node;
+        node = (node->left != nullptr) ? node->left : node->right;
+        delete temp;
+      }
+    }
+    return node;
+  }
+
+  // recusively traversing to free memory
+  void recursive_destroy_tree(Node *node) {
+    if (node == nullptr) return; // base case
+    recursive_destroy_tree(node->left);
+    recursive_destroy_tree(node->right);
+    delete node;
+    node = nullptr;
+  }
+
+  // recusively traversing to print inorder
+  void recursive_inorder(Node *node) {
+    if (node == nullptr) return; // base case
+    recursive_inorder(node->left);
+    cout << node->value << " ";
+    recursive_inorder(node->right);
   }
 
 public:
+  BinaryTree() { root = nullptr; }
+  ~BinaryTree() { recursive_destroy_tree(root); }
 
-  Node* search(int val) {
-    Node* currNode = this->root;
-    return recursive_search(currNode, val);
+  // recursively searching using binary search
+  bool search(int value) {
+    if (root == nullptr) return false;
+    return recursive_search(root, value) != nullptr;
   }
 
-  void insert(int val) {
-    Node* currNode = this->root;
-    //if tree empty
-    if (currNode == nullptr) {
-      Node* new_node = new Node(val);
-      this->root = new_node;
-    } else {
-      //recurse to insert at correct position
-      recursive_insert(currNode, val);
-    }
-  }
+  // insertion & deletion
+  void insert(int value) { root = recursive_insert(root, value); }
+  void remove(int value) { root = recursive_remove(root, value); }
 
-  void remove(int val) {
-    Node* currNode = this->root;
-    //if tree empty do nothing
-    if (currNode == nullptr) return;
-
-    //if deleting root
-    if (currNode->value == val) {
-      
-    }
-
-    //else recurse to correct position
-    else recursive_remove(currNode, val);
-  }
-
-  void print_tree() {
-    if (this->root == nullptr) cout << "tree empty" << endl;
-    else {
-      cout << "tree hahah" << endl;
-    }
+  //printing
+  void print_inorder() {
+    recursive_inorder(root);
+    cout << endl;
   }
 };
+
+int main() {
+
+  BinaryTree BT;
+
+  //testing insertion
+  BT.insert(1);
+  BT.insert(1);
+  BT.insert(2);
+  BT.insert(3);
+  BT.print_inorder();
+
+  //testing removal
+  BT.remove(2);
+  BT.remove(3);
+  BT.print_inorder();
+
+  cout << "searching for 1: " << BT.search(1) << endl;
+  cout << "searching for 4: " << BT.search(4) << endl;
+
+  return 0;
+}

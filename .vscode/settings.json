@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "__config": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "new": "cpp"
     }
 }
