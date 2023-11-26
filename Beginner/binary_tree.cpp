@@ -20,7 +20,7 @@ private:
   Node *root;
 
   // binary tree traversal
-  Node *recursive_search(Node *node, int val) {
+  Node *recursive_search(Node *node, int val) { // O(logn)
     // base case
     if (val == node->value)
       return node;
@@ -34,7 +34,7 @@ private:
     return nullptr; // if reach end & not found
   }
 
-  Node *recursive_insert(Node *node, int val) {
+  Node *recursive_insert(Node *node, int val) { // O(logn)
     // base case
     if (node == nullptr)
       return new Node(val);
@@ -48,7 +48,7 @@ private:
     return node; // no action taken if duplicate
   }
 
-  Node *recursive_remove(Node *node, int val) {
+  Node *recursive_remove(Node *node, int val) { // O(logn)
     //base case
     if (node == nullptr) return node;
 
@@ -84,7 +84,7 @@ private:
   }
 
   // recusively traversing to free memory
-  void recursive_destroy_tree(Node *node) {
+  void recursive_destroy_tree(Node *node) { //O(n)
     if (node == nullptr) return; // base case
     recursive_destroy_tree(node->left);
     recursive_destroy_tree(node->right);
@@ -93,7 +93,7 @@ private:
   }
 
   // recusively traversing to print inorder
-  void recursive_inorder(Node *node) {
+  void recursive_inorder(Node *node) { //O(n)
     if (node == nullptr) return; // base case
     recursive_inorder(node->left);
     cout << node->value << " ";
