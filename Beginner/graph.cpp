@@ -7,6 +7,8 @@ using namespace std;
 This file contains the implementation for an undirected graph
 -implemenented with an adjaceny list
 -nodes are zero indexed
+-DFS traversal implemented (processing = print node)
+-BFS traversal implemented (processing = print node)
 */
 
 class Graph {
@@ -15,6 +17,17 @@ private:
 
   int numNodes;
   vector<list<int>> adjList;
+
+  void recursive_DFS(int currNode, vector<bool>& visited) {
+    //processing node (printing)
+    cout << currNode << " ";
+    visited[currNode] = true;
+
+    //recursing for all neighbours
+    for (int neighbour : adjList[currNode]) {
+      if (visited[neighbour] == false) recursive_DFS(neighbour, visited);
+    }
+  }
 
 public:
 
@@ -49,7 +62,12 @@ public:
   }
 
   void DFS_print(int startNode) { // O(m + n)
+    //intialise bool vector to represent visited nodes
+    vector<bool> visited(numNodes, false);
 
+    //recursively calling DFS from beginning at startNode
+    recursive_DFS(startNode, visited);
+    cout << endl;
   }
 
   void BFS_print(int startNode) { // O(m + n)
@@ -69,6 +87,13 @@ int main() {
   g.insert_edge(2, 3);
   g.insert_edge(3, 4);
   g.print_graph(); 
+
+  //testing DFS
+  cout << "\n--DFS--" << endl;
+  g.DFS_print(0);
+
+  cout << "\n--BFS--" << endl;
+  g.BFS_print(0);
 
   //testing searching
   cout << "\n--Searching--" << endl;
