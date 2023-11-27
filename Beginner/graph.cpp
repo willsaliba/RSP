@@ -48,6 +48,14 @@ public:
     }
   }
 
+  void DFS_print(int startNode) { // O(m + n)
+
+  }
+
+  void BFS_print(int startNode) { // O(m + n)
+
+  }
+
 };
 
 int main() {
