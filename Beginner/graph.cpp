@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <queue>
 using namespace std;
 
 /*
@@ -19,7 +20,7 @@ private:
   vector<list<int>> adjList;
 
   void recursive_DFS(int currNode, vector<bool>& visited) {
-    //processing node (printing)
+    //processing node (printing it)
     cout << currNode << " ";
     visited[currNode] = true;
 
@@ -71,7 +72,31 @@ public:
   }
 
   void BFS_print(int startNode) { // O(m + n)
+    //intialise bool vector to represent visited nodes 
+    vector<bool> visited(numNodes, false);
+    visited[startNode] = true;
 
+    //create queue for all nodes at each step & adding startNode
+    queue<int> activeNodes;
+    activeNodes.push(startNode);
+
+    //looping until BFS completes traversing (queue empty)
+    while (activeNodes.empty() == false) {
+      
+      //processing currNode (printing it) by extracting from front 
+      int currNode = activeNodes.front();
+      cout << currNode << " ";
+      activeNodes.pop();
+
+      //adding all neighbouring nodes to back of queue
+      for (int neighbour : adjList[currNode]) {
+        if (visited[neighbour] == false) {
+          activeNodes.push(neighbour);
+          visited[neighbour] = true;
+        }
+      }
+    }
+    cout << endl; //newline for my OCD
   }
 
 };
